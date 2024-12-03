@@ -1,10 +1,7 @@
 import mongoose from 'mongoose'
 import env from './env'
 
-mongoose.connect(env.databaseUrl === undefined ? '' : env.databaseUrl, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(env.databaseUrl === undefined ? '' : env.databaseUrl)
 
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'mongodb connection error:'))
