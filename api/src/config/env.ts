@@ -2,12 +2,15 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
+const { JWT_SECRET, PORT, DB_URL, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET } =
+  process.env
+
 export default {
-  jwtSecret: process.env.JWT_SECRET,
-  port: process.env.PORT,
-  databaseUrl: process.env.DB_URL,
+  jwtSecret: JWT_SECRET,
+  port: PORT,
+  databaseUrl: DB_URL,
   stripe: {
-    secretKey: process.env.STRIPE_SECRET_KEY,
-    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+    secretKey: STRIPE_SECRET_KEY,
+    webhookSecret: STRIPE_WEBHOOK_SECRET,
   },
 }
