@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { isTokenExpired } from '../utils'
+import { API_URL } from '../../config.json'
 
 // pages
 import Home from '../views/Home.vue'
@@ -9,7 +9,8 @@ import Signup from '../views/Signup.vue'
 
 import Account from '../views/Account.vue'
 import AccountHome from '../components/Account/Home.vue'
-import AccountHistory from '../components/Account/History.vue'
+import AccountHistory from '@/components/Account/History.vue'
+
 
 const routes = [
   {
@@ -51,22 +52,8 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(),
   routes,
-})
-
-router.beforeEach((to, from, next) => {
-
-  if (to.meta.requireAuth == true ) {
-    if(isTokenExpired() == false){
-      next()
-    } else{
-      next({path: "/login"})
-    }
-  } 
-  else {
-    next()
-  }
 })
 
 export default router

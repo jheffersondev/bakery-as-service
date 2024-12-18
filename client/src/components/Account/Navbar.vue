@@ -1,67 +1,45 @@
 <template>
   <a-layout-header class="header">
-    <a-menu
-      theme="light"
-      mode="horizontal"
-      :selectedKeys="selectedKeys"
-    >
-
+    <a-menu theme="light" mode="horizontal">
       <a-menu-item @click="AccountPage">
         <a-avatar
           shape="square"
           size="medium"
           :style="{ backgroundColor: '#f0f2f5', color: '#1890ff', verticalAlign: 'middle' }"
         >
-          {{letter}}
+          {{ auth.user ? auth.user.name.charAt(0) : ''}}
         </a-avatar>
 
-        <b>
-          &nbsp;{{firstName}}
-        </b>
-
+        &nbsp;Profile
       </a-menu-item>
 
-      <div
-        class="nav-right"
-        @click="Logout"
-      >
-        <a-menu-item key="Home">
-          <LogoutOutlined /> Logout
-        </a-menu-item>
+      <div class="nav-right" @click="Logout">
+        <a-menu-item key="Home"> <LogoutOutlined /> Logout </a-menu-item>
       </div>
-
     </a-menu>
-
   </a-layout-header>
 </template>
 
-<script >
+<script lang="ts" setup>
+import { useAuthStore } from '@/stores/auth'
 import { LogoutOutlined } from '@ant-design/icons-vue'
-export default {
-  mounted() {
-    this.letter = this.$store.getters.$GetUser.name.charAt(0)
-    this.firstName = this.$store.getters.$GetUser.name.split(' ')[0]
-  },
-  data() {
-    return {
-      selectedKeys: ['name'],
-      letter: '',
-      firstName: '',
-    }
-  },
-  methods: {
-    AccountPage() {
-      this.$router.push({ path: '/account' })
-    },
-    Logout() {
-      this.$store.dispatch('Logout')
-      this.$router.push({ path: '/login' })
-    },
-  },
-  components: {
-    LogoutOutlined,
-  },
+import { onMounted, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+
+const auth = useAuthStore()
+const router = useRouter()
+
+console.log(auth.userToken)
+
+function AccountPage() {
+  router.push({ path: '/account' })
 }
+
+function Logout() {
+  auth.logout()
+  router.push({ path: '/login' })
+}
+
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,600;1,200;1,700&display=swap');

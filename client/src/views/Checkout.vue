@@ -3,83 +3,94 @@
   <a-layout>
     <div class="content">
       <a-card class="payment-information-card">
-        <br>
-        <a-steps
-          :current="1"
-          size="small"
-        >
+        <br />
+        <a-steps :current="1" size="small">
           <a-step title="Account" />
-          <a-step title="Payment" />
+          <a-step title="Checkout" />
           <a-step title="Review" />
         </a-steps>
-        <br>
+        <br />
 
         <a-divider type="horizontal" />
 
-        <a-spin
-          tip="Processing payment"
-          :spinning="loading"
-        >
+        <a-spin tip="Processing payment" :spinning="checkout.loading">
           <a-form
-            :model="formState"
-            :rules="rules"
-            ref="formReference"
+            :model="checkout.formState"
+            class="checkout-form"
+            ref="checkoutForm"
             spellcheck="false"
           >
-            <!-- <h1>Payment Details</h1> -->
+            <span class="selected-method-title">
+              <h2>Fill your payment details</h2>
+            </span>
 
-            <a-form-item
-              name="name"
-              ref="name"
-              class="form-item"
-            >
-              <label>Full name</label>
-              <a-input
-                class="input"
-                v-model:value="formState.name"
-              />
+            <a-form-item name="name" ref="name" class="form-item">
+              <label>Full Name</label>
+              <a-input class="input" v-model:value="checkout.formState.name" autofocus />
             </a-form-item>
 
-            <a-form-item
-              name="address"
-              ref="address"
-              class="form-item"
-            >
-              <label>Shipping zipcode</label>
-              <a-input
-                class="input"
-                v-model:value="formState.address"
-                type='number'
-              />
+            <div class="stripe-form-item">
+              <label class="stripe-elements-label">Debit or Credit Card Number</label>
+              <div ref="cardNumberContainer" id="cardNumberContainer"></div>
+            </div>
+
+            <a-flex class="stripe-horizontal-form-items" horizontal>
+              <div class="stripe-form-item">
+                <label class="stripe-elements-label">Expiration</label>
+                <div ref="cardExpContainer" id="cardExpContainer"></div>
+              </div>
+
+              <div class="stripe-form-item">
+                <label class="stripe-elements-label">Security code</label>
+                <div ref="cardCodeContainer" id="cardCodeContainer"></div>
+              </div>
+            </a-flex>
+
+            <a-form-item class="form-item">
+              <a-checkbox v-model:checked="checkout.formState.addressSameAsShipping"
+                >Billing address same as shipping address</a-checkbox
+              >
             </a-form-item>
 
-            <label class="stripe-elements-label">Card details</label>
-            <div
-              ref="stripeCard"
-              class="stripe-card"
-            ></div>
-            <br>
+            <template v-if="checkout.formState.addressSameAsShipping === false">
+              <a-flex horizontal>
+                <a-form-item name="city" ref="city" class="form-item">
+                  <label>City</label>
+                  <a-input class="input" v-model:value="checkout.formState.city" type="text" />
+                </a-form-item>
+
+                <a-form-item name="state" ref="state" class="form-item">
+                  <label>State</label>
+                  <a-input class="input" v-model:value="checkout.formState.state" type="text" />
+                </a-form-item>
+
+                <a-form-item name="zipcode" ref="zipcode" class="form-item">
+                  <label>Zipcode</label>
+                  <a-input class="input" v-model:value="checkout.formState.zipcode" type="text" />
+                </a-form-item>
+              </a-flex>
+            </template>
+
+            <br />
           </a-form>
         </a-spin>
       </a-card>
 
       <a-card class="order-summary-card">
-        <br>
-        <br>
+        <br />
+        <br />
         <!-- <h1>Order summary</h1> -->
         <a-card title="Plan Summary">
           <div>
-            <span class="plan-name">{{plan.name}}</span>
-            <span class="plan-price">$ {{plan.price}}</span>
+            <span class="plan-name">{{ checkout.plan.name }}</span>
+            <span class="plan-price">$ {{ checkout.plan.price }}</span>
           </div>
-          <span class="recurrency-plan-period">Billed {{plan.recurrencyDate}}</span>
+          <span class="recurrency-plan-period">Billed {{ checkout.plan.recurrencyDate }}</span>
 
           <a-divider type="horizontal" />
           <div>
             <span class="plan-name">Delivery</span>
-            <span class="plan-price">
-              $ 0
-            </span>
+            <span class="plan-price"> $ 0 </span>
             &nbsp; <a-tag color="green">Free Shipping</a-tag>
           </div>
 
@@ -89,17 +100,13 @@
             <a-button
               type="primary"
               class="payment-btn"
-              :loading="loading"
+              :loading="checkout.loading"
               @click="purchase()"
-              :rules="rules"
             >
               Subscribe
             </a-button>
 
-            <a-button
-              type="text"
-              :size="size"
-            >
+            <a-button type="text">
               <template #icon>
                 <LockOutlined />
               </template>
@@ -110,180 +117,131 @@
       </a-card>
     </div>
   </a-layout>
-
 </template>
 
-<script>
-import axios from 'axios'
+<script lang="ts" setup>
+import { onMounted, ref, useTemplateRef } from 'vue'
+import { useRouter } from 'vue-router'
+import { message } from 'ant-design-vue'
 import { LockOutlined } from '@ant-design/icons-vue'
-import Navbar from '../components/Account/Navbar.vue'
-import { API_URL, STRIPE_PUBLIC_KEY, DEFAULT_PLAN_OBJECT } from '../config.json'
+import { loadStripe } from '@stripe/stripe-js/pure'
+import axios from 'axios'
 
-// eslint-disable-next-line no-undef
-let stripe = Stripe(STRIPE_PUBLIC_KEY)
-let elements = stripe.elements()
-let card = undefined
+import { useCheckoutStore } from '@/stores/checkout'
+import { useAuthStore } from '@/stores/auth'
+import Navbar from '@/components/Account/Navbar.vue'
+import { API_URL, STRIPE_PUBLIC_KEY } from '../../config.json'
 
-export default {
-  created() {
-    this.plan = this.$store.getters.$GetChosenPlan
-    if (this.plan == null || this.plan == undefined) {
-      this.$store.dispatch('SetChosenPlan', DEFAULT_PLAN_OBJECT)
-      this.plan = DEFAULT_PLAN_OBJECT
-    }
-  },
-  mounted() {
-    this.formRef = this.$refs.formReference
+const auth = useAuthStore()
+const checkout = useCheckoutStore()
+const router = useRouter()
 
-    this.$nextTick(async () => {
-      try {
-        this.createStripeCard()
-      } catch (e) {
-        card.destroy()
-        this.createStripeCard()
-      }
-    })
-  },
-  data() {
-    return {
-      formState: {
-        name: '',
-        address: '',
-      },
-      formRef: false,
-      loading: false,
-      cardHasError: false,
-      error: '',
-      plan: undefined,
-      rules: {
-        name: [
-          {
-            required: true,
-            validator: this.nameValidator,
-            trigger: 'change',
-          },
-        ],
-      },
-    }
-  },
-  methods: {
-    nameValidator(rule, value) {
-      if (!value || value.length < 5) {
-        return Promise.reject('Please input the name')
-      } else {
-        return Promise.resolve()
-      }
-    },
-    purchase() {
-      this.loading = true
+function purchase() {
+  checkout.setLoading(true)
 
-      this.formRef
-        .validate()
-        .then(() => {
-          stripe
-            .createPaymentMethod({
-              type: 'card',
-              card,
-              billing_details: {
-                name: this.name,
-              },
-            })
-            .then((result) => {
-              if (result.error) {
-                this.error = result.error
-                this.cardHasError = true
-                this.$message.error(result.error.message)
-                this.$forceUpdate()
-                return (this.loading = false)
-              } else {
-                const paymentMethodId = result.paymentMethod.id
+  checkout.formRef
+    .validate()
+    .then(() => {
+      if (checkout.stripe)
+        checkout.stripe
+          .createPaymentMethod({
+            type: 'card',
+            card: checkout.card,
+            billing_details: {
+              name: checkout.formState.name,
+            },
+          })
+          .then((result: any) => {
+            if (result.error) {
+              checkout.error = result.error
+              checkout.cardHasError = true
+              message.error(result.error.message)
+              return checkout.setLoading(false)
+            } else {
+              const paymentMethodId = result.paymentMethod.id
 
-                let config = {
-                  method: 'post',
-                  url: `${API_URL}/subscription`,
-                  headers: {
-                    Authorization: `Bearer ${this.$store.getters.$GetToken}`,
-                  },
-                  data: {
-                    paymentMethodId,
-                    priceId: this.plan.id,
-                  },
-                }
-
-                axios(config)
-                  .then((res) => {
-                    console.log(res)
-                    if (res.data.success == true) {
-                      this.$message.success(
-                        'You has been successfully subscribed'
-                      )
-                      this.$store.dispatch(
-                        'SubscriptionChange',
-                        res.data.subscription.id
-                      )
-                    } else {
-                      this.$message.error(res.data.error)
-                    }
-                    return (this.loading = false)
-                  })
-                  .catch((error) => {
-                    console.log(error)
-                    if (
-                      error.response !== undefined &&
-                      error.response.status == 403
-                    ) {
-                      // redirect
-                      this.$message.error(
-                        'Your session has been expired, please do login again'
-                      )
-                      setTimeout(() => {
-                        this.$router.push('/login')
-                      }, 1500)
-                    } else {
-                      this.$message.error(error.message)
-                    }
-                    return (this.loading = false)
-                  })
+              let config = {
+                method: 'post',
+                url: `${API_URL}/subscription`,
+                headers: {
+                  Authorization: `Bearer ${auth.userToken}`,
+                },
+                data: {
+                  paymentMethodId,
+                  priceId: checkout.plan?.id,
+                },
               }
-            })
-        })
-        .catch(() => {
-          return (this.loading = false)
-        })
-    },
-    createStripeCard() {
-      card = elements.create('card', {
-        hidePostalCode: true,
-        style: {
-          base: {
-            iconColor: '#1890ff',
-            border: '1px solid #c3c3c3 !important',
-            color: '#888888',
-            fontWeight: '400',
-            fontFamily: 'Roboto, Open Sans, Segoe UI, sans-serif',
-            fontSize: '14px',
-            fontSmoothing: 'antialiased',
-            ':-webkit-autofill': {
-              color: '#fce883',
-            },
-            '::placeholder': {
-              color: '#c3c3c3',
-            },
-          },
-          invalid: {
-            iconColor: '#FFC7EE',
-            color: '#FFC7EE',
-          },
-        },
-      })
-      card.mount(this.$refs.stripeCard)
-    },
-  },
-  components: {
-    Navbar,
-    LockOutlined,
-  },
+
+              axios(config)
+                .then((res) => {
+                  console.log(res)
+                  if (res.data.success == true) {
+                    message.success('You has been successfully subscribed')
+                    auth.subscriptionChange(res.data.subscription.id)
+                  } else {
+                    message.error(res.data.error)
+                  }
+                  return checkout.setLoading(false)
+                })
+                .catch((error) => {
+                  console.log(error)
+                  if (error.response !== undefined && error.response.status == 403) {
+                    // redirect
+                    message.error('Your session has been expired, please do login again')
+                    setTimeout(() => {
+                      router.push('/login')
+                    }, 1500)
+                  } else {
+                    message.error(error.message)
+                  }
+                  return checkout.setLoading(false)
+                })
+            }
+          })
+    })
+    .catch(() => {
+      return checkout.setLoading(false)
+    })
 }
+
+onMounted(async () => {
+  checkout.formRef = useTemplateRef('checkoutForm')
+  const stripe = await loadStripe(STRIPE_PUBLIC_KEY)
+
+  const stripeElementsStyle = {
+    placeholder: '',
+    showIcon: true,
+    style: {
+      base: {
+        lineHeight: '25px',
+        color: '#000',
+        fontWeight: '500',
+        fontFamily: 'Roboto, Open Sans, Segoe UI, sans-serif',
+        fontSize: '14px',
+        fontSmoothing: 'antialiased',
+        ':-webkit-autofill': {
+          color: '#fce883',
+        },
+        '::placeholder': {
+          color: '#bfbfbf',
+        },
+      },
+      invalid: {
+        color: 'red',
+      },
+    },
+  }
+
+  const elements = stripe?.elements({ locale: 'en' })
+  const cardNumberElement = elements?.create('cardNumber', stripeElementsStyle)
+
+  const cardExpElement = elements?.create('cardExpiry', stripeElementsStyle)
+  const cardCodeElement = elements?.create('cardCvc', stripeElementsStyle)
+
+  cardExpElement?.mount('#cardExpContainer')
+  cardNumberElement?.mount('#cardNumberContainer')
+  cardCodeElement?.mount('#cardCodeContainer')
+})
 </script>
 
 <style scoped>
@@ -291,14 +249,72 @@ export default {
 
 * {
   font-family: 'Nunito', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('@/assets/fonts/Roboto/Roboto-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Roobert';
+  src: url('@/assets/fonts/Roobert/Roobert-Regular.otf');
+}
+
+@font-face {
+  font-family: 'RobotoBold';
+  src: url('@/assets/fonts/Roboto/Roboto-Bold.ttf') format('truetype');
+}
+
+label {
+  color: #7f7f7f;
+}
+
+input {
+  color: #888888;
+  font-size: 14px;
+  padding: 7px;
+  outline: none !important;
+}
+
+input:hover,
+input:focus {
+  box-shadow: none;
+  border: 1px solid #d9d9d9 !important;
+}
+
+.max-width {
+  width: 100%;
+}
+
 .content {
   display: flex;
   flex-direction: row;
+  height: 100vh;
 }
 .content .payment-information-card {
   margin: 50px;
   flex-grow: 2;
+  max-height: fit-content;
+}
+
+.content .payment-information-card .checkout-form {
+  padding: 20px;
+  border: 1px solid #1777ff;
+  border-radius: 5px;
+}
+
+.content .payment-information-card .checkout-form .selected-method-title {
+  font-weight: normal !important;
+  padding: 10px;
+  display: inline-block;
+}
+
+.content .payment-information-card .checkout-form .selected-method-title h2 {
+  font-family: 'Roobert', sans-serif !important;
+
+  display: inline;
 }
 
 .content .order-summary-card {
@@ -316,11 +332,11 @@ export default {
 }
 
 .content .order-summary-card .recurrency-plan-period {
-  color: #c3c3c3;
+  color: #7f7f7f;
 }
 
 .content .payment-information-card .form-item {
-  margin: 10px;
+  margin: 20px 10px;
   max-width: 75%;
 }
 
@@ -334,16 +350,29 @@ export default {
 }
 
 .content .payment-information-card .form-item .input {
-  color: #c3c3c3;
+  color: #000;
 }
 
-.content .payment-information-card .stripe-card {
-  max-width: 75%;
-  margin: 10px;
-  margin-top: 4px;
+.content .payment-information-card .stripe-horizontal-form-items {
+  margin-top: 10px;
+  column-gap: 10px;
+}
+
+.content .payment-information-card .stripe-form-item div {
   border: 1px solid #d9d9d9 !important;
-  padding: 7px;
-  border-radius: 4px;
+  font-size: 14px;
+  border-radius: 6px;
+  padding: 5px;
+  margin: 0 10px;
+  width: 75%;
+}
+
+.content .payment-information-card .stripe-form-item #cardExpContainer {
+  width: 100%;
+}
+
+.content .payment-information-card .stripe-form-item #cardCodeContainer {
+  margin-left: 10px;
 }
 
 .content .payment-information-card h1 {

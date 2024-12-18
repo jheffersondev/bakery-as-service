@@ -3,14 +3,8 @@
   <router-view :key="$route.fullPath"></router-view>
 </template>
 
-<script>
-import Navbar from '../components/Account/Navbar.vue'
-export default {
-  components: {
-    Navbar,
-  },
-}
+<script lang="ts" setup>
+import Navbar from '@/components/Account/Navbar.vue'
 </script>
 
-<style>
-</style>
+<style></style>

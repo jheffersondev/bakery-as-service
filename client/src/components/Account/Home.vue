@@ -26,25 +26,23 @@
   </a-layout>
 </template>
 
-<script>
+<script lang="ts" setup>
 import Description from './Description.vue'
 import PlanReview from './PlanReview.vue'
 import History from './History.vue'
 import PaymentMethod from './PaymentMethod.vue'
 
-export default {
-  components: {
-    PlanReview,
-    Description,
-    History,
-    PaymentMethod,
-  },
-}
 </script>
 
 <style scoped>
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('~@/assets/fonts/Roboto/Roboto-Regular.ttf');
+}
+
 * {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 .content {
   margin: 10px;

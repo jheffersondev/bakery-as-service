@@ -6,7 +6,9 @@
       <div class="banner-content">
         <h1 class="title">Local Bakery</h1>
         <p>
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
+          been the industry's standard dummy text ever since the 1500s, when an unknown printer took
+          a galley of type and scrambled it to make a type specimen book.
         </p>
       </div>
     </div>
@@ -15,51 +17,32 @@
       <div class="resume">
         <a-typography-title :level="2">Weekly Bread Basket</a-typography-title>
         <a-typography-paragraph class="description">
-          Now you no longer need to go to one of our physical locations, start a subscription now and receive a special basket weekly❤️
+          Now you no longer need to go to one of our physical locations, start a subscription now
+          and receive a special basket weekly❤️
         </a-typography-paragraph>
       </div>
-      <br>
+      <br />
 
       <div class="card-box">
-        <div
-          class="single-card"
-          v-for='plan in plans'
-          :key="plan"
-        >
-          <a-card
-            hoverable
-            class="card"
-          >
+        <div class="single-card" v-for="plan in state.plans">
+          <a-card hoverable class="card">
             <template #cover>
-              <img
-                :alt="plan.name"
-                :src="plan.image"
-              />
+              <img :alt="plan.name" :src="plan.image" />
             </template>
             <a-card-meta>
               <template #description>
-                <a-typography-title :level="4">{{plan.name}}</a-typography-title>
-                <p>
-                  What you'll get
-                </p>
+                <a-typography-title :level="4">{{ plan.name }}</a-typography-title>
+                <p>What you'll get</p>
                 <div class="benefits-box">
-                  <span
-                    class="benefit"
-                    v-for="benefit in plan.benefits"
-                    :key="benefit"
-                  >
-                    <CheckCircleOutlined :style="{color: 'green'}" /> {{benefit}}
+                  <span class="benefit" v-for="benefit in plan.benefits" :key="benefit">
+                    <CheckCircleOutlined :style="{ color: 'green' }" /> {{ benefit }}
                   </span>
                 </div>
-                <br>
-                <a-typography-title :level="4">${{plan.price}}</a-typography-title>
+                <br />
+                <a-typography-title :level="4">${{ plan.price }}</a-typography-title>
 
-                <br>
-                <a-button
-                  type="primary"
-                  class="btn-choose"
-                  @click="setChosenPlan(plan)"
-                >
+                <br />
+                <a-button type="primary" class="btn-choose" @click="setChosenPlan(plan)">
                   Choose
                 </a-button>
               </template>
@@ -69,67 +52,68 @@
       </div>
     </a-layout-content>
 
-    <br>
+    <br />
   </a-layout>
 </template>
 
-<script>
-import Navbar from '../components/Navbar.vue'
+<script lang="ts" setup>
+import { reactive } from 'vue'
 import { CheckCircleOutlined } from '@ant-design/icons-vue'
+import { useRouter } from 'vue-router'
+
+import { useAuthStore } from '@/stores/auth'
+import { useCheckoutStore } from '@/stores/checkout'
+
+import Navbar from '../components/Navbar.vue'
 import PremiumImage from '@/assets/images/Premium.jpg'
 import MediumImage from '@/assets/images/Medium.jpg'
 import StarterImage from '@/assets/images/Starter.jpg'
 
-export default {
-  data() {
-    return {
-      plans: [
-        {
-          id: 'price_1JPf1sGywnxGFLOb48TWkHJL',
-          image: StarterImage,
-          name: 'Starter',
-          price: 25.0,
-          recurrencyDate: 'Monthly',
-          benefits: ['benefit #1', 'benefit #2'],
-        },
-        {
-          id: 'price_1JPf1sGywnxGFLObCsUy55tY',
-          image: MediumImage,
-          name: 'Medium',
-          price: 35.0,
-          recurrencyDate: 'Monthly',
-          benefits: ['benefit #1', 'benefit #2'],
-        },
-        {
-          id: 'price_1JPf1sGywnxGFLObvjVe3rja',
-          image: PremiumImage,
-          name: 'Premium',
-          price: 45.0,
-          recurrencyDate: 'Monthly',
-          benefits: ['benefit #1', 'benefit #2'],
-        },
-      ],
-    }
-  },
-  methods: {
-    setChosenPlan(plan) {
-      this.$store.dispatch('SetChosenPlan', plan)
-      const userToken = localStorage.getItem('userToken')
-      const user = this.$store.getters.$GetUser
+const router = useRouter()
+const auth = useAuthStore()
+const checkout = useCheckoutStore()
 
-      if (userToken == null || userToken == undefined) {
-        this.$router.push('/signup')
-      } else if (user.id != undefined || user.stripe != undefined) {
-        this.$router.push('/checkout')
-      } else {
-        this.$router.push('/login')
-      }
+const state = reactive({
+  plans: [
+    {
+      id: 'price_1JPf1sGywnxGFLOb48TWkHJL',
+      image: StarterImage,
+      name: 'Starter',
+      price: 25.0,
+      recurrencyDate: 'Monthly',
+      benefits: ['benefit #1', 'benefit #2'],
     },
-  },
-  components: {
-    Navbar,
-    CheckCircleOutlined,
-  },
+    {
+      id: 'price_1JPf1sGywnxGFLObCsUy55tY',
+      image: MediumImage,
+      name: 'Medium',
+      price: 35.0,
+      recurrencyDate: 'Monthly',
+      benefits: ['benefit #1', 'benefit #2'],
+    },
+    {
+      id: 'price_1JPf1sGywnxGFLObvjVe3rja',
+      image: PremiumImage,
+      name: 'Premium',
+      price: 45.0,
+      recurrencyDate: 'Monthly',
+      benefits: ['benefit #1', 'benefit #2'],
+    },
+  ],
+})
+
+function setChosenPlan(plan: any) {
+  checkout.setChosenPlan(plan)
+  const userToken = localStorage.getItem('userToken')
+  const user = auth.user
+
+  if (!user || userToken == null || userToken == undefined) {
+    router.push('/signup')
+  } else if (user.id != undefined || user.stripe != undefined) {
+    router.push('/checkout')
+  } else {
+    router.push('/login')
+  }
 }
 </script>
 
@@ -137,11 +121,7 @@ export default {
 @import url('../assets/css/styles.css');
 
 .main {
-  background: -webkit-linear-gradient(
-    to bottom,
-    #fff,
-    #e9eef9
-  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: -webkit-linear-gradient(to bottom, #fff, #e9eef9); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
     to bottom,
     #fff,

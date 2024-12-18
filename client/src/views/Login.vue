@@ -3,184 +3,160 @@
     <Navbar />
     <a-layout-content class="content">
       <a-card class="signup-box-area">
-        <a-typography-title
-          :level="3"
-          class="mainTitle"
-        >
-          Sign In
-        </a-typography-title>
+        <a-typography-title :level="3" class="mainTitle"> Sign In </a-typography-title>
 
         <a-alert
           class="alert"
           type="error"
-          :message="error"
+          :message="state.error"
           banner
           closable
-          v-if="error"
+          v-if="state.error"
         />
 
         <a-form
-          ref="formReference"
-          :model="formState"
-          :rules="rules"
-          :label-col="labelCol"
-          :wrapper-col="wrapperCol"
+          ref="login-form"
+          as="HTMLFormElement"
+          :model="state.formState"
+          :rules="state.rules"
+          :label-col="state.labelCol"
+          :wrapper-col="state.wrapperCol"
         >
-          <a-form-item
-            ref="email"
-            label="Email"
-            name="email"
-          >
-            <a-input v-model:value="formState.email" />
+          <a-form-item ref="email" label="Email" name="email">
+            <a-input v-model:value="state.formState.email" />
           </a-form-item>
 
-          <a-form-item
-            ref="pass"
-            label="Password"
-            name="pass"
-          >
-            <a-input-password v-model:value="formState.pass" />
+          <a-form-item ref="pass" label="Password" name="pass">
+            <a-input-password v-model:value="state.formState.pass" />
           </a-form-item>
-          <a-form-item
-            :wrapper-col="{ span: 14, offset: 2 }"
-            name="termsAndConditions"
-          >
-            <a-checkbox v-model:checked="formState.rememberDetails">
+          <a-form-item :wrapper-col="{ span: 14, offset: 2 }" name="termsAndConditions">
+            <a-checkbox v-model:checked="state.formState.rememberDetails">
               Remember login details
             </a-checkbox>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 14, offset: 2 }">
-            <a-button
-              type="primary"
-              :loading="loading"
-              @click="onSubmit"
-            >Sign in</a-button>
+            <a-button type="primary" :loading="state.loading" @click="onSubmit">Sign in</a-button>
           </a-form-item>
-
         </a-form>
       </a-card>
-
     </a-layout-content>
   </a-layout>
 </template>
-<script>
+
+<script lang="ts" setup>
+import { onActivated, onMounted, reactive, useTemplateRef, watchEffect, type ShallowRef } from 'vue'
+import { useRouter } from 'vue-router'
+import type { Rule } from 'ant-design-vue/es/form'
+
+import { useAuthStore } from '@/stores/auth'
 import Navbar from '../components/Navbar.vue'
 
-export default {
-  mounted() {
-    this.formRef = this.$refs.formReference
+const router = useRouter()
+const auth = useAuthStore()
+
+const formRef = useTemplateRef<HTMLFormElement>('login-form')
+const state = reactive<{
+  loading: boolean
+  formState: {
+    email: string
+    pass: string
+    rememberDetails: boolean
+  }
+  error: string
+  rules: Record<string, Rule[]>
+  labelCol: { span: number }
+  wrapperCol: { span: number }
+}>({
+  loading: false,
+  formState: {
+    email: '',
+    pass: '',
+    rememberDetails: false,
   },
-  data() {
-    return {
-      loading: false,
-      formRef: undefined,
-      formState: {
-        email: '',
-        pass: '',
+  error: '',
+  rules: {
+    email: [
+      {
+        required: true,
+        validator: emailValidation,
+        trigger: 'blur',
       },
-      error: '',
-      rules: {
-        email: [
-          {
-            required: true,
-            validator: this.emailValidation,
-            trigger: 'change',
-          },
-        ],
-        pass: [
-          {
-            required: true,
-            validator: this.validatePass,
-            trigger: 'change',
-          },
-        ],
+    ],
+    pass: [
+      {
+        required: true,
+        min: 8,
+        trigger: 'blur',
       },
-      labelCol: {
-        span: 4,
-      },
-      wrapperCol: {
-        span: 14,
-      },
-      other: '',
-    }
+    ],
   },
-
-  components: {
-    Navbar,
+  labelCol: {
+    span: 4,
   },
+  wrapperCol: {
+    span: 14,
+  },
+})
 
-  methods: {
-    onSubmit: function (e) {
-      e.preventDefault()
-      this.loading = true
-      this.error = ''
+onMounted(() => {})
 
-      this.formRef
-        .validate()
-        .then(() => {
-          this.$store
-            .dispatch('Login', {
-              email: this.formState.email,
-              password: this.formState.pass,
-            })
-            .then((res) => {
-              if (res.data.success === true) {
-                let token = res.data.token
-                let user = res.data.user
-                let subId = user.stripe.stripeSubscriptionId
+function onSubmit(e: SubmitEvent) {
+  e.preventDefault()
+  state.loading = true
+  state.error = ''
 
-                this.$store.dispatch('SetUserToken', token.toString())
-                this.$store.dispatch('SetUserDetails', user)
+  if(formRef.value)
+  formRef.value
+    .validate()
+    .then(() => {
+      auth
+        .login(state.formState.email, state.formState.pass)
+        .then((res: any) => {
+          if (res.data.success === true) {
+            let token = res.data.token
+            let user = res.data.user
+            let subId = user.stripe.stripeSubscriptionId
 
-                if (subId == undefined || subId == null) {
-                  this.$router.push({ path: '/checkout' })
-                } else {
-                  this.$router.push({ path: '/account' })
-                }
-              } else {
-                this.error = res.data.error
-              }
+            auth.setUserToken(token.toString())
+            auth.setUserDetails(user)
 
-              this.loading = false
-            })
-            .catch(() => {
-              this.error = `A unexpected error happened, please, try again.`
-              this.loading = false
-            })
+            if (subId == undefined || subId == null) {
+              router.push({ path: '/checkout' })
+            } else {
+              router.push({ path: '/account' })
+            }
+          } else {
+            state.error = res.data.error
+          }
+
+          state.loading = false
         })
         .catch(() => {
-          this.loading = false
+          state.error = `A unexpected error happened, please, try again.`
+          state.loading = false
         })
-    },
-
-    emailValidation: async function (rule, value) {
-      if (value === '') {
-        return Promise.reject('Enter a valid email')
-      }
-      if (
-        /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/.test(
-          value
-        )
-      ) {
-        return Promise.resolve()
-      } else {
-        return Promise.reject('Enter a valid Email')
-      }
-    },
-
-    validatePass: async function (rule, value) {
-      if (value === '') {
-        return Promise.reject('Enter a valid password')
-      } else {
-        if (this.formState.checkPass !== '') {
-          this.formRef.validateFields('checkPass')
-        }
-        return Promise.resolve()
-      }
-    },
-  },
+    })
+    .catch(() => {
+      state.loading = false
+    })
 }
+
+async function emailValidation(rule: any, value: string) {
+  if (value === '') {
+    return Promise.reject('Enter a valid email')
+  }
+  if (
+    /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/.test(
+      value,
+    )
+  ) {
+    return Promise.resolve()
+  } else {
+    return Promise.reject('Enter a valid Email')
+  }
+}
+
 </script>
 <style scoped>
 @import url('../assets/css/styles.css');

@@ -1,22 +1,19 @@
 <template>
   <a-card>
-    <h1>{{this.$store.getters.$GetUser.name}}</h1>
-    <br>
+    <h1>{{ auth.user?.name }}</h1>
+    <br />
     <div class="decriptionBox">
-      <span>
-        <MailOutlined /> {{this.$store.getters.$GetUser.email}}
-      </span><br>
+      <span> <MailOutlined /> {{ auth.user?.email }} </span><br />
     </div>
   </a-card>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { MailOutlined } from '@ant-design/icons-vue'
-export default {
-  components: {
-    MailOutlined,
-  },
-}
+import { useAuthStore } from '@/stores/auth'
+
+const auth = useAuthStore()
+
 </script>
 
 <style scoped>
