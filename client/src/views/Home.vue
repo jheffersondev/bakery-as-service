@@ -2,20 +2,29 @@
   <a-layout class="main">
     <Navbar />
 
-    <div class="banner">
-      <div class="banner-content">
-        <h1 class="title">Local Bakery</h1>
-        <p>
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
-          been the industry's standard dummy text ever since the 1500s, when an unknown printer took
-          a galley of type and scrambled it to make a type specimen book.
-        </p>
-      </div>
-    </div>
+    <a-layout-content class="hero-section">
+      <a-flex>
+        <div class="banner-content">
+          <h1 class="title">
+            Fresh Bread,<br />
+            Delivered Monthly
+          </h1>
+          <p>
+            Enjoy a curated selection of artisanal bread, pastries, and more, delivered monthly.
+            Elevate your dining experience with our high-quality products.
+          </p>
 
-    <a-layout-content class="pricing-content">
+          <a-button type="primary" shape="round" class="cta-button"> Subscribe Now </a-button>
+        </div>
+        <!-- https://stock.adobe.com/br/search?filters%5Bcontent_type%3Aphoto%5D=1&filters%5Bcontent_type%3Aillustration%5D=1&filters%5Bcontent_type%3Azip_vector%5D=1&filters%5Bcontent_type%3Avideo%5D=1&filters%5Bcontent_type%3Atemplate%5D=1&filters%5Bcontent_type%3A3d%5D=1&filters%5Bcontent_type%3Aimage%5D=1&k=bread+basket+png&order=relevance&limit=100&search_page=1&search_type=usertyped&acp=&aco=bread+basket+png&get_facets=0&asset_id=900459944 -->
+        <img src="@/assets/images/bread-basket-hero.webp" class="hero-image" />
+      </a-flex>
+    </a-layout-content>
+
+    <br />
+    <a-layout-content class="pricing-section">
       <div class="resume">
-        <a-typography-title :level="2">Weekly Bread Basket</a-typography-title>
+        <a-typography-title :level="2" class="title">Our pricing</a-typography-title>
         <a-typography-paragraph class="description">
           Now you no longer need to go to one of our physical locations, start a subscription now
           and receive a special basket weekly❤️
@@ -23,33 +32,37 @@
       </div>
       <br />
 
-      <div class="card-box">
-        <div class="single-card" v-for="plan in state.plans">
-          <a-card hoverable class="card">
-            <template #cover>
-              <img :alt="plan.name" :src="plan.image" />
-            </template>
-            <a-card-meta>
-              <template #description>
-                <a-typography-title :level="4">{{ plan.name }}</a-typography-title>
-                <p>What you'll get</p>
-                <div class="benefits-box">
-                  <span class="benefit" v-for="benefit in plan.benefits" :key="benefit">
-                    <CheckCircleOutlined :style="{ color: 'green' }" /> {{ benefit }}
-                  </span>
-                </div>
-                <br />
-                <a-typography-title :level="4">${{ plan.price }}</a-typography-title>
-
-                <br />
-                <a-button type="primary" class="btn-choose" @click="setChosenPlan(plan)">
-                  Choose
-                </a-button>
+      <a-flex>
+        <div class="card-box" :span="12">
+          <div class="plan-card" v-for="plan in state.plans">
+            <a-card hoverable class="card">
+              <template #cover>
+                <img :alt="plan.name" :src="plan.image" />
               </template>
-            </a-card-meta>
-          </a-card>
+              <a-card-meta>
+                <template #description>
+                  <a-typography-title :level="4" class="plan-name">{{
+                    plan.name
+                    }}</a-typography-title>
+                  <p>{{ plan.description }}</p>
+                  <div class="benefits-box">
+                    <span class="benefit" v-for="benefit in plan.benefits" :key="benefit">
+                      <CheckCircleOutlined :style="{ color: 'green' }" /> {{ benefit }}
+                    </span>
+                  </div>
+                  <br />
+                  <a-typography-title :level="4">${{ plan.price }}</a-typography-title>
+
+                  <br />
+                  <a-button type="primary" class="btn-choose" @click="setChosenPlan(plan)">
+                    Get started
+                  </a-button>
+                </template>
+              </a-card-meta>
+            </a-card>
+          </div>
         </div>
-      </div>
+      </a-flex>
     </a-layout-content>
 
     <br />
@@ -78,7 +91,8 @@ const state = reactive({
     {
       id: 'price_1JPf1sGywnxGFLOb48TWkHJL',
       image: StarterImage,
-      name: 'Starter',
+      name: 'The Daily Loaf',
+      description: 'Fresh, artisanal bread, delivered weekly.',
       price: 25.0,
       recurrencyDate: 'Monthly',
       benefits: ['benefit #1', 'benefit #2'],
@@ -86,7 +100,8 @@ const state = reactive({
     {
       id: 'price_1JPf1sGywnxGFLObCsUy55tY',
       image: MediumImage,
-      name: 'Medium',
+      name: 'Sweet and Savory',
+      description: 'Enjoy a mix of delicious bread and cookies, delivered weekly.',
       price: 35.0,
       recurrencyDate: 'Monthly',
       benefits: ['benefit #1', 'benefit #2'],
@@ -94,10 +109,11 @@ const state = reactive({
     {
       id: 'price_1JPf1sGywnxGFLObvjVe3rja',
       image: PremiumImage,
-      name: 'Premium',
+      name: "The Baker's Choice",
+      description: 'Indulge in a variety of baked goods',
       price: 45.0,
       recurrencyDate: 'Monthly',
-      benefits: ['benefit #1', 'benefit #2'],
+      benefits: ['Bread, cookies, pastries, and more.', 'Free shipping'],
     },
   ],
 })
@@ -118,110 +134,136 @@ function setChosenPlan(plan: any) {
 </script>
 
 <style scoped>
-@import url('../assets/css/styles.css');
+@import url('@/assets/css/styles.css');
 
 .main {
-  background: -webkit-linear-gradient(to bottom, #fff, #e9eef9); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to bottom,
-    #fff,
-    #e9eef9
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: -webkit-linear-gradient(to bottom, #fff, #e9eef9);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom,
+      #fff,
+      #e9eef9);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
-.banner {
-  background: url('../assets/images/bg.jpg') no-repeat;
-  background-size: cover;
-  background-position: top;
+.hero-section {
   width: 100%;
   height: 500px;
 }
 
-.banner .banner-content {
+.hero-section .banner-content {
   margin: 10%;
-  color: #fff !important;
+  color: #252b42 !important;
 }
 
-.banner .banner-content .title {
+.hero-section .banner-content .title {
+  font-weight: bold;
   font-size: 65px;
-  color: #fff !important;
+  color: #252b42 !important;
+  font-family: Opensans;
 }
 
-.banner .banner-content p {
-  font-size: 16px;
-  max-width: 50%;
+.banner-content .cta-button {
+  margin-top: 10px;
+}
+
+.hero-section .banner-content p {
+  color: #737373;
+  font-size: 18px;
+  max-width: 500px;
   margin-top: -20px;
 }
 
-.pricing-content {
-  font-family: 'Nunito', sans-serif;
-  margin: 50px;
+.hero-section .hero-image {
+  height: 70vh;
 }
 
-.pricing-content .resume {
+.pricing-section {
+  font-family: 'Nunito', sans-serif;
+  margin: 300px 50px;
+}
+
+.pricing-section .resume {
   text-align: center;
   padding: 20px;
 }
 
-.pricing-content .resume .description {
+.pricing-section .resume .title {
+  font-size: 38px;
+  font-weight: bold;
+  font-family: Opensans;
+  color: #252b42 !important;
+}
+
+.pricing-section .resume .description {
   font-size: 15px;
   width: 50%;
   margin: auto;
 }
 
-.pricing-content .card-box {
+.pricing-section .card-box {
   margin: 40px auto;
   display: flex;
   flex-wrap: wrap;
+  gap: 30px;
   flex-direction: row;
   width: 90%;
 }
 
-.pricing-content .card-box .single-card {
+.pricing-section .card-box .plan-card .card {
+  width: 300px;
   flex-grow: 1;
 }
 
-.pricing-content .card-box .card {
+.pricing-section .card-box .plan-card p {
+  max-width: 200px;
+}
+
+.plan-name {
+  font-size: 1.5em;
+  color: #252b42 !important;
+  font-family: Opensans;
+}
+
+.pricing-section .card-box .card {
   margin: auto;
-  max-width: 260px;
   border-radius: 15px;
   -webkit-box-shadow: 0px 0px 16px -5px #c3c3c3;
   box-shadow: 0px 0px 16px -5px #c3c3c3;
 }
 
-.pricing-content .card-box .card img {
-  max-width: 260px;
+.pricing-section .card-box .card img {
+  width: 100%;
   height: 230px;
   border-radius: 15px 15px 0 0;
 }
 
-.pricing-content .card .benefits-box .benefit {
+.pricing-section .card .benefits-box .benefit {
   display: block;
   margin-top: 5px;
 }
 
-.pricing-content .btn-choose {
+.pricing-section .btn-choose {
   width: 100%;
   border-radius: 6px;
 }
 
 @media screen and (max-width: 800px) {
-  .banner .banner-content p {
+  .hero-section .banner-content p {
     max-width: 80%;
   }
 
-  .pricing-content .card-box {
+  .pricing-section .card-box {
     margin: 0 auto;
     width: 70%;
   }
 
-  .pricing-content .card-box .card {
+  .pricing-section .card-box .card {
     margin-top: 20px;
   }
 }
 
 @media screen and (max-width: 430px) {
-  .pricing-content {
+  .pricing-section {
     margin: 10px;
     width: 100%;
   }
