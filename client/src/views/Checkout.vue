@@ -3,13 +3,9 @@
   <a-layout>
     <div class="content">
       <a-card class="payment-information-card">
-        <br />
-        <a-steps :current="1" size="small">
-          <a-step title="Account" />
-          <a-step title="Checkout" />
-          <a-step title="Review" />
-        </a-steps>
-        <br />
+        <span class="selected-method-title">
+          <h2>Fill your payment details</h2>
+        </span>
 
         <a-divider type="horizontal" />
 
@@ -20,17 +16,20 @@
             ref="checkoutForm"
             spellcheck="false"
           >
-            <span class="selected-method-title">
-              <h2>Fill your payment details</h2>
-            </span>
+            <a-flex>
+              <a-form-item name="name" ref="name" class="form-item">
+                <label>First Name</label>
+                <a-input class="input" v-model:value="checkout.formState.firstName" autofocus />
+              </a-form-item>
 
-            <a-form-item name="name" ref="name" class="form-item">
-              <label>Full Name</label>
-              <a-input class="input" v-model:value="checkout.formState.name" autofocus />
-            </a-form-item>
+              <a-form-item name="name" ref="name" class="form-item">
+                <label>Last Name</label>
+                <a-input class="input" v-model:value="checkout.formState.lastName" autofocus />
+              </a-form-item>
+            </a-flex>
 
             <div class="stripe-form-item">
-              <label class="stripe-elements-label">Debit or Credit Card Number</label>
+              <label class="stripe-elements-label">Card Number</label>
               <div ref="cardNumberContainer" id="cardNumberContainer"></div>
             </div>
 
@@ -64,9 +63,18 @@
                   <a-input class="input" v-model:value="checkout.formState.state" type="text" />
                 </a-form-item>
 
-                <a-form-item name="zipcode" ref="zipcode" class="form-item">
+                <a-form-item
+                  name="zipcode"
+                  v-model:value="inputValue"
+                  ref="zipcode"
+                  class="form-item"
+                  @input="limitInput"
+                >
                   <label>Zipcode</label>
-                  <a-input class="input" v-model:value="checkout.formState.zipcode" type="text" />
+                  <a-input
+                    type="number"
+                    onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                  />
                 </a-form-item>
               </a-flex>
             </template>
@@ -136,6 +144,22 @@ const auth = useAuthStore()
 const checkout = useCheckoutStore()
 const router = useRouter()
 
+const inputValue = ref<string>('')
+
+const limitInput = (event: Event): void => {
+  const target = event.target as HTMLInputElement;
+  let value = target.value;
+  value = value.replace(/[^0-9]/g, "");
+
+  if (value.length > 5) {
+    value = value.slice(0, 5);
+  }
+
+  checkout.formState.zipcode = value;
+  inputValue.value = value;
+  target.value = value;
+}
+
 function purchase() {
   checkout.setLoading(true)
 
@@ -148,7 +172,7 @@ function purchase() {
             type: 'card',
             card: checkout.card,
             billing_details: {
-              name: checkout.formState.name,
+              name: `${checkout.formState.firstName} ${checkout.formState.lastName}`,
             },
           })
           .then((result: any) => {
@@ -214,7 +238,7 @@ onMounted(async () => {
     style: {
       base: {
         lineHeight: '25px',
-        color: '#000',
+        color: '#7f7f7f',
         fontWeight: '500',
         fontFamily: 'Roboto, Open Sans, Segoe UI, sans-serif',
         fontSize: '14px',
@@ -267,12 +291,8 @@ onMounted(async () => {
   src: url('@/assets/fonts/Roboto/Roboto-Bold.ttf') format('truetype');
 }
 
-label {
-  color: #7f7f7f;
-}
-
 input {
-  color: #888888;
+  color: #7f7f7f;
   font-size: 14px;
   padding: 7px;
   outline: none !important;
@@ -300,24 +320,22 @@ input:focus {
 }
 
 .content .payment-information-card .checkout-form {
-  padding: 20px;
-  border: 1px solid #1777ff;
   border-radius: 5px;
 }
 
 .content .payment-information-card .checkout-form .selected-method-title {
   font-weight: normal !important;
-  padding: 10px;
   display: inline-block;
 }
 
 .content .payment-information-card .checkout-form .selected-method-title h2 {
   font-family: 'Roobert', sans-serif !important;
-
+  color: '#000000';
   display: inline;
 }
 
 .content .order-summary-card {
+  background: none;
   flex-grow: 1;
 }
 
@@ -341,16 +359,13 @@ input:focus {
 }
 
 .content .payment-information-card label {
+  color: #1f1f1f;
   font-size: 15px;
   line-height: 30px;
 }
 
 .content .payment-information-card .stripe-elements-label {
   margin: 0px 10px;
-}
-
-.content .payment-information-card .form-item .input {
-  color: #000;
 }
 
 .content .payment-information-card .stripe-horizontal-form-items {
