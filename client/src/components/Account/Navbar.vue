@@ -1,16 +1,8 @@
 <template>
   <a-layout-header class="header">
-    <a-menu theme="light" mode="horizontal">
+    <a-menu theme="dark" mode="horizontal">
       <a-menu-item @click="AccountPage">
-        <a-avatar
-          shape="square"
-          size="medium"
-          :style="{ backgroundColor: '#f0f2f5', color: '#1890ff', verticalAlign: 'middle' }"
-        >
-          {{ auth.user ? auth.user.name.charAt(0) : ''}}
-        </a-avatar>
-
-        &nbsp;Profile
+        <img src="@/assets/images/logo.png" alt="" class="crumbly-logo" width="100px"/>
       </a-menu-item>
 
       <div class="nav-right" @click="Logout">
@@ -39,7 +31,6 @@ function Logout() {
   auth.logout()
   router.push({ path: '/login' })
 }
-
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,600;1,200;1,700&display=swap');
@@ -52,6 +43,7 @@ function Logout() {
   color: #1890ff;
   position: absolute;
   right: 0;
+  top: 10px;
 }
 .router-link-active {
   border-bottom: 1px solid;

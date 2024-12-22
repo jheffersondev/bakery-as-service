@@ -21,48 +21,66 @@
       </a-flex>
     </a-layout-content>
 
-    <br />
+    <a-layout-content class="usecase-section">
+      <a-flex class="row">
+        <img src="@/assets/images/illustration.jpg" class="image" />
+        <div class="side-content">
+          <h2>No More Bakery Runs!</h2>
+          <h1 class="title">
+            Skip the Trip, Enjoy the <span>Freshness Bread</span><br />
+            Delivered to Your Doorstep
+          </h1>
+          <p>
+            Enjoy a curated selection of artisanal bread, pastries, and more, delivered monthly.
+            Elevate your dining experience with our high-quality products.
+          </p>
+
+          <a-button type="primary" shape="round" class="cta-button"> Order Now </a-button>
+        </div>
+        <!-- https://stock.adobe.com/br/search?filters%5Bcontent_type%3Aphoto%5D=1&filters%5Bcontent_type%3Aillustration%5D=1&filters%5Bcontent_type%3Azip_vector%5D=1&filters%5Bcontent_type%3Avideo%5D=1&filters%5Bcontent_type%3Atemplate%5D=1&filters%5Bcontent_type%3A3d%5D=1&filters%5Bcontent_type%3Aimage%5D=1&k=bread+basket+png&order=relevance&limit=100&search_page=1&search_type=usertyped&acp=&aco=bread+basket+png&get_facets=0&asset_id=900459944 -->
+      </a-flex>
+    </a-layout-content>
+
     <a-layout-content class="pricing-section">
       <div class="resume">
         <a-typography-title :level="2" class="title">Our pricing</a-typography-title>
         <a-typography-paragraph class="description">
-          Now you no longer need to go to one of our physical locations, start a subscription now
-          and receive a special basket weekly❤️
+          Discover flexible plans designed to fit your budget and enjoy the delicious taste of
+          fresh, artisanal bread delivered right to your door. Choose the option that best suits
+          your needs and savor the goodness ❤️
         </a-typography-paragraph>
       </div>
       <br />
 
-      <a-flex>
-        <div class="card-box" :span="12">
-          <div class="plan-card" v-for="plan in state.plans">
-            <a-card hoverable class="card">
-              <template #cover>
-                <img :alt="plan.name" :src="plan.image" />
-              </template>
-              <a-card-meta>
-                <template #description>
-                  <a-typography-title :level="4" class="plan-name">{{
-                    plan.name
-                    }}</a-typography-title>
-                  <p>{{ plan.description }}</p>
-                  <div class="benefits-box">
-                    <span class="benefit" v-for="benefit in plan.benefits" :key="benefit">
-                      <CheckCircleOutlined :style="{ color: 'green' }" /> {{ benefit }}
-                    </span>
-                  </div>
-                  <br />
-                  <a-typography-title :level="4">${{ plan.price }}</a-typography-title>
+      <div class="card-box" :span="12">
+        <div class="plan-card" v-for="plan in state.plans">
+          <a-card hoverable class="card">
+            <template #cover>
+              <img :alt="plan.name" :src="plan.image" />
+            </template>
+            <a-card-meta>
+              <template #description>
+                <a-typography-title :level="4" class="plan-name">{{
+                  plan.name
+                }}</a-typography-title>
+                <p>{{ plan.description }}</p>
+                <div class="benefits-box">
+                  <span class="benefit" v-for="benefit in plan.benefits" :key="benefit">
+                    <CheckCircleOutlined :style="{ color: '#1677ff' }" /> {{ benefit }}
+                  </span>
+                </div>
+                <br />
+                <a-typography-title :level="4">${{ plan.price }}</a-typography-title>
 
-                  <br />
-                  <a-button type="primary" class="btn-choose" @click="setChosenPlan(plan)">
-                    Get started
-                  </a-button>
-                </template>
-              </a-card-meta>
-            </a-card>
-          </div>
+                <br />
+                <a-button type="primary" class="btn-choose" @click="setChosenPlan(plan)">
+                  Subscribe
+                </a-button>
+              </template>
+            </a-card-meta>
+          </a-card>
         </div>
-      </a-flex>
+      </div>
     </a-layout-content>
 
     <br />
@@ -92,28 +110,34 @@ const state = reactive({
       id: 'price_1JPf1sGywnxGFLOb48TWkHJL',
       image: StarterImage,
       name: 'The Daily Loaf',
-      description: 'Fresh, artisanal bread, delivered weekly.',
+      description: 'Ideal for busy folks who want fresh bread without the hassle.',
       price: 25.0,
       recurrencyDate: 'Monthly',
-      benefits: ['benefit #1', 'benefit #2'],
+      benefits: ['Perfect for everyday households.', 'Fresh, artisanal bread, delivered weekly.'],
     },
     {
       id: 'price_1JPf1sGywnxGFLObCsUy55tY',
       image: MediumImage,
       name: 'Sweet and Savory',
-      description: 'Enjoy a mix of delicious bread and cookies, delivered weekly.',
+      description: 'Great for families or those who love a variety of treats.',
       price: 35.0,
       recurrencyDate: 'Monthly',
-      benefits: ['benefit #1', 'benefit #2'],
+      benefits: [
+        ' Satisfy your sweet and savory cravings all in one delivery',
+        'Enjoy a mix of delicious bread and cookies, delivered weekly.',
+      ],
     },
     {
       id: 'price_1JPf1sGywnxGFLObvjVe3rja',
       image: PremiumImage,
       name: "The Baker's Choice",
-      description: 'Indulge in a variety of baked goods',
+      description: ' Perfect for special occasions or simply treating yourself',
       price: 45.0,
       recurrencyDate: 'Monthly',
-      benefits: ['Bread, cookies, pastries, and more.', 'Free shipping'],
+      benefits: [
+        'Indulge your inner foodie with a rotating selection of baked goods.',
+        'A rotating selection of cookies, cakes, pastries, and more, delivered monthly.',
+      ],
     },
   ],
 })
@@ -139,9 +163,7 @@ function setChosenPlan(plan: any) {
 .main {
   background: -webkit-linear-gradient(to bottom, #fff, #e9eef9);
   /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to bottom,
-      #fff,
-      #e9eef9);
+  background: linear-gradient(to bottom, #fff, #e9eef9);
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
@@ -162,7 +184,8 @@ function setChosenPlan(plan: any) {
   font-family: Opensans;
 }
 
-.banner-content .cta-button {
+.hero-banner .cta-button {
+  height: 40px;
   margin-top: 10px;
 }
 
@@ -171,15 +194,65 @@ function setChosenPlan(plan: any) {
   font-size: 18px;
   max-width: 500px;
   margin-top: -20px;
+  line-height: 22px;
 }
 
 .hero-section .hero-image {
   height: 70vh;
 }
 
+.usecase-section {
+  background: #fff;
+  margin-top: 300px;
+}
+
+.usecase-section .row {
+  margin: 0 50px;
+}
+
+.usecase-section img {
+  height: 70vh;
+  mix-blend-mode: multiply;
+}
+
+.usecase-section .side-content {
+  margin-top: 150px;
+}
+
+.usecase-section .side-content h2 {
+  font-family: Roboto, sans-serif;
+  font-style: italic;
+  color: #faaa32;
+}
+
+.usecase-section .side-content .cta-button { 
+  background-color: #ffbc48;
+  height: 40px;
+  margin-top: 10px;
+}
+
+.usecase-section .side-content .title {
+  font-size: 43px;
+  font-weight: bold;
+  font-family: Opensans;
+  color: #252b42 !important;
+}
+
+.usecase-section .title span {
+  font-style: Italic;
+  font-family: Roboto;
+  color: #faaa32 !important;
+}
+
+.usecase-section p {
+  color: #737373;
+  font-size: 18px;
+}
+
 .pricing-section {
+  margin: 0 auto;
   font-family: 'Nunito', sans-serif;
-  margin: 300px 50px;
+  margin: 200px 50px;
 }
 
 .pricing-section .resume {
@@ -195,7 +268,8 @@ function setChosenPlan(plan: any) {
 }
 
 .pricing-section .resume .description {
-  font-size: 15px;
+  color: #737373;
+  font-size: 16px;
   width: 50%;
   margin: auto;
 }
@@ -206,16 +280,20 @@ function setChosenPlan(plan: any) {
   flex-wrap: wrap;
   gap: 30px;
   flex-direction: row;
-  width: 90%;
+  width: fit-content;
 }
 
 .pricing-section .card-box .plan-card .card {
+  margin: 0 auto;
   width: 300px;
   flex-grow: 1;
 }
 
 .pricing-section .card-box .plan-card p {
-  max-width: 200px;
+  color: #737373;
+  font-family: Roboto;
+  font-size: 17px;
+  max-width: 250px;
 }
 
 .plan-name {
