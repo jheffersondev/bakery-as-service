@@ -20,13 +20,9 @@
             </a-button>
           </div>
           <!-- https://stock.adobe.com/br/search?filters%5Bcontent_type%3Aphoto%5D=1&filters%5Bcontent_type%3Aillustration%5D=1&filters%5Bcontent_type%3Azip_vector%5D=1&filters%5Bcontent_type%3Avideo%5D=1&filters%5Bcontent_type%3Atemplate%5D=1&filters%5Bcontent_type%3A3d%5D=1&filters%5Bcontent_type%3Aimage%5D=1&k=bread+basket+png&order=relevance&limit=100&search_page=1&search_type=usertyped&acp=&aco=bread+basket+png&get_facets=0&asset_id=900459944 -->
-          <img
-            src="@/assets/images/bread-basket-hero.webp"
-            class="hero-image"
-            sizes="(max-width: 600px) 300px, 
+          <img src="@/assets/images/bread-basket-hero.webp" class="hero-image" sizes="(max-width: 600px) 300px, 
           (max-width: 900px) 600px, 
-          1200px"
-          />
+          1200px" />
         </a-flex>
       </div>
     </a-layout-content>
@@ -42,8 +38,9 @@
               Delivered to Your Doorstep
             </h1>
             <p>
-              Enjoy a curated selection of artisanal bread, pastries, and more, delivered monthly.
-              Elevate your dining experience with our high-quality products.
+              Say goodbye to rushed mornings and hectic errands, now you can enjoy the convenience of having fresh bread
+              delivered right to your doorstep. <br>
+
             </p>
 
             <a-button type="primary" shape="round" class="cta-button">
@@ -77,7 +74,7 @@
                 <template #description>
                   <a-typography-title :level="4" class="plan-name">{{
                     plan.name
-                  }}</a-typography-title>
+                    }}</a-typography-title>
                   <!-- <p>{{ plan.description }}</p> -->
                   <div class="benefits-box">
                     <span class="benefit" v-for="benefit in plan.benefits" :key="benefit">
@@ -87,8 +84,8 @@
                   </div>
                   <br />
                   <div class="price-box">
-                    <a-typography-title class="price" :level="4"
-                      >${{ plan.price }} <span class="charge-frequency">/mo</span>
+                    <a-typography-title class="price" :level="4">${{ plan.price }} <span
+                        class="charge-frequency">/mo</span>
                     </a-typography-title>
                     <a-button type="primary" class="btn-choose" @click="setChosenPlan(plan)">
                       Subscribe
@@ -104,9 +101,7 @@
 
     <a-layout-footer class="footer-section">
       <CopyrightCircleOutlined /> Crumbly @2024 created by
-      <a target="_blank" href="https://www.linkedin.com/in/jhefferson-william/"
-        >Jhefferson William</a
-      >
+      <a target="_blank" href="https://www.linkedin.com/in/jhefferson-william/">Jhefferson William</a>
     </a-layout-footer>
   </a-layout>
 </template>
@@ -411,7 +406,6 @@ function setChosenPlan(plan: any) {
 @media screen and (max-width: 430px) {
   .pricing-section {
     margin: 10px;
-    width: 100%;
-  }
+    width: 100%;  }
 }
 </style>
