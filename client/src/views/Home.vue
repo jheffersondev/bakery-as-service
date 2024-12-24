@@ -3,93 +3,121 @@
     <Navbar />
 
     <a-layout-content class="hero-section">
-      <a-flex>
-        <div class="banner-content">
-          <h1 class="title">
-            Fresh Bread,<br />
-            Delivered Monthly
-          </h1>
-          <p>
-            Enjoy a curated selection of artisanal bread, pastries, and more, delivered monthly.
-            Elevate your dining experience with our high-quality products.
-          </p>
+      <div class="inner-section-container">
+        <a-flex>
+          <div class="banner-content">
+            <h1 class="title">
+              Fresh Bread,<br />
+              Delivered Monthly
+            </h1>
+            <p>
+              Enjoy a curated selection of artisanal bread, pastries, and more, delivered monthly.
+              Elevate your dining experience with our high-quality products.
+            </p>
 
-          <a-button type="primary" shape="round" class="cta-button"> Subscribe Now </a-button>
-        </div>
-        <!-- https://stock.adobe.com/br/search?filters%5Bcontent_type%3Aphoto%5D=1&filters%5Bcontent_type%3Aillustration%5D=1&filters%5Bcontent_type%3Azip_vector%5D=1&filters%5Bcontent_type%3Avideo%5D=1&filters%5Bcontent_type%3Atemplate%5D=1&filters%5Bcontent_type%3A3d%5D=1&filters%5Bcontent_type%3Aimage%5D=1&k=bread+basket+png&order=relevance&limit=100&search_page=1&search_type=usertyped&acp=&aco=bread+basket+png&get_facets=0&asset_id=900459944 -->
-        <img src="@/assets/images/bread-basket-hero.webp" class="hero-image" />
-      </a-flex>
+            <a-button type="primary" shape="round" class="cta-button">
+              <ShoppingCartOutlined /> Subscribe Now
+            </a-button>
+          </div>
+          <!-- https://stock.adobe.com/br/search?filters%5Bcontent_type%3Aphoto%5D=1&filters%5Bcontent_type%3Aillustration%5D=1&filters%5Bcontent_type%3Azip_vector%5D=1&filters%5Bcontent_type%3Avideo%5D=1&filters%5Bcontent_type%3Atemplate%5D=1&filters%5Bcontent_type%3A3d%5D=1&filters%5Bcontent_type%3Aimage%5D=1&k=bread+basket+png&order=relevance&limit=100&search_page=1&search_type=usertyped&acp=&aco=bread+basket+png&get_facets=0&asset_id=900459944 -->
+          <img
+            src="@/assets/images/bread-basket-hero.webp"
+            class="hero-image"
+            sizes="(max-width: 600px) 300px, 
+          (max-width: 900px) 600px, 
+          1200px"
+          />
+        </a-flex>
+      </div>
     </a-layout-content>
 
     <a-layout-content class="usecase-section">
-      <a-flex class="row">
-        <img src="@/assets/images/illustration.jpg" class="image" />
-        <div class="side-content">
-          <h2>No More Bakery Runs!</h2>
-          <h1 class="title">
-            Skip the Trip, Enjoy the <span>Freshness Bread</span><br />
-            Delivered to Your Doorstep
-          </h1>
-          <p>
-            Enjoy a curated selection of artisanal bread, pastries, and more, delivered monthly.
-            Elevate your dining experience with our high-quality products.
-          </p>
+      <div class="inner-section-container">
+        <a-flex class="row">
+          <img src="@/assets/images/illustration.jpg" class="image" />
+          <div class="side-content">
+            <h2>No More Bakery Runs!</h2>
+            <h1 class="title">
+              Skip the Trip, Enjoy the <span>Freshness Bread</span><br />
+              Delivered to Your Doorstep
+            </h1>
+            <p>
+              Enjoy a curated selection of artisanal bread, pastries, and more, delivered monthly.
+              Elevate your dining experience with our high-quality products.
+            </p>
 
-          <a-button type="primary" shape="round" class="cta-button"> Order Now </a-button>
-        </div>
-        <!-- https://stock.adobe.com/br/search?filters%5Bcontent_type%3Aphoto%5D=1&filters%5Bcontent_type%3Aillustration%5D=1&filters%5Bcontent_type%3Azip_vector%5D=1&filters%5Bcontent_type%3Avideo%5D=1&filters%5Bcontent_type%3Atemplate%5D=1&filters%5Bcontent_type%3A3d%5D=1&filters%5Bcontent_type%3Aimage%5D=1&k=bread+basket+png&order=relevance&limit=100&search_page=1&search_type=usertyped&acp=&aco=bread+basket+png&get_facets=0&asset_id=900459944 -->
-      </a-flex>
+            <a-button type="primary" shape="round" class="cta-button">
+              <ShoppingCartOutlined /> Order Now
+            </a-button>
+          </div>
+          <!-- https://stock.adobe.com/br/search?filters%5Bcontent_type%3Aphoto%5D=1&filters%5Bcontent_type%3Aillustration%5D=1&filters%5Bcontent_type%3Azip_vector%5D=1&filters%5Bcontent_type%3Avideo%5D=1&filters%5Bcontent_type%3Atemplate%5D=1&filters%5Bcontent_type%3A3d%5D=1&filters%5Bcontent_type%3Aimage%5D=1&k=bread+basket+png&order=relevance&limit=100&search_page=1&search_type=usertyped&acp=&aco=bread+basket+png&get_facets=0&asset_id=900459944 -->
+        </a-flex>
+      </div>
     </a-layout-content>
 
     <a-layout-content class="pricing-section">
-      <div class="resume">
-        <a-typography-title :level="2" class="title">Our pricing</a-typography-title>
-        <a-typography-paragraph class="description">
-          Discover flexible plans designed to fit your budget and enjoy the delicious taste of
-          fresh, artisanal bread delivered right to your door. Choose the option that best suits
-          your needs and savor the goodness ❤️
-        </a-typography-paragraph>
-      </div>
-      <br />
+      <div class="inner-section-container">
+        <div class="resume">
+          <a-typography-title :level="2" class="title">Our pricing</a-typography-title>
+          <a-typography-paragraph class="description">
+            Discover flexible plans designed to fit your budget and enjoy the delicious taste of
+            fresh, artisanal bread delivered right to your door. Choose the option that best suits
+            your needs and savor the goodness ❤️
+          </a-typography-paragraph>
+        </div>
+        <br />
 
-      <div class="card-box" :span="12">
-        <div class="plan-card" v-for="plan in state.plans">
-          <a-card hoverable class="card">
-            <template #cover>
-              <img :alt="plan.name" :src="plan.image" />
-            </template>
-            <a-card-meta>
-              <template #description>
-                <a-typography-title :level="4" class="plan-name">{{
-                  plan.name
-                }}</a-typography-title>
-                <p>{{ plan.description }}</p>
-                <div class="benefits-box">
-                  <span class="benefit" v-for="benefit in plan.benefits" :key="benefit">
-                    <CheckCircleOutlined :style="{ color: '#1677ff' }" /> {{ benefit }}
-                  </span>
-                </div>
-                <br />
-                <a-typography-title :level="4">${{ plan.price }}</a-typography-title>
-
-                <br />
-                <a-button type="primary" class="btn-choose" @click="setChosenPlan(plan)">
-                  Subscribe
-                </a-button>
+        <div class="card-box" :span="12">
+          <div class="plan-card" v-for="plan in state.plans">
+            <a-card hoverable class="card">
+              <template #cover>
+                <img :alt="plan.name" :src="plan.image" />
               </template>
-            </a-card-meta>
-          </a-card>
+              <a-card-meta class="plan-meta">
+                <template #description>
+                  <a-typography-title :level="4" class="plan-name">{{
+                    plan.name
+                  }}</a-typography-title>
+                  <!-- <p>{{ plan.description }}</p> -->
+                  <div class="benefits-box">
+                    <span class="benefit" v-for="benefit in plan.benefits" :key="benefit">
+                      <CheckCircleTwoTone two-tone-color="#faaa32" />
+                      {{ benefit }}
+                    </span>
+                  </div>
+                  <br />
+                  <div class="price-box">
+                    <a-typography-title class="price" :level="4"
+                      >${{ plan.price }} <span class="charge-frequency">/mo</span>
+                    </a-typography-title>
+                    <a-button type="primary" class="btn-choose" @click="setChosenPlan(plan)">
+                      Subscribe
+                    </a-button>
+                  </div>
+                </template>
+              </a-card-meta>
+            </a-card>
+          </div>
         </div>
       </div>
     </a-layout-content>
 
-    <br />
+    <a-layout-footer class="footer-section">
+      <CopyrightCircleOutlined /> Crumbly @2024 created by
+      <a target="_blank" href="https://www.linkedin.com/in/jhefferson-william/"
+        >Jhefferson William</a
+      >
+    </a-layout-footer>
   </a-layout>
 </template>
 
 <script lang="ts" setup>
 import { reactive } from 'vue'
-import { CheckCircleOutlined } from '@ant-design/icons-vue'
+import {
+  CheckCircleTwoTone,
+  ShoppingCartOutlined,
+  CopyrightCircleOutlined,
+} from '@ant-design/icons-vue'
 import { useRouter } from 'vue-router'
 
 import { useAuthStore } from '@/stores/auth'
@@ -184,17 +212,16 @@ function setChosenPlan(plan: any) {
   font-family: Opensans;
 }
 
-.hero-banner .cta-button {
-  height: 40px;
-  margin-top: 10px;
-}
-
 .hero-section .banner-content p {
   color: #737373;
   font-size: 18px;
   max-width: 500px;
   margin-top: -20px;
   line-height: 22px;
+}
+
+.hero-section .banner-content .cta-button {
+  height: 40px;
 }
 
 .hero-section .hero-image {
@@ -217,6 +244,7 @@ function setChosenPlan(plan: any) {
 
 .usecase-section .side-content {
   margin-top: 150px;
+  margin-bottom: 100px;
 }
 
 .usecase-section .side-content h2 {
@@ -225,7 +253,7 @@ function setChosenPlan(plan: any) {
   color: #faaa32;
 }
 
-.usecase-section .side-content .cta-button { 
+.usecase-section .side-content .cta-button {
   background-color: #ffbc48;
   height: 40px;
   margin-top: 10px;
@@ -252,7 +280,7 @@ function setChosenPlan(plan: any) {
 .pricing-section {
   margin: 0 auto;
   font-family: 'Nunito', sans-serif;
-  margin: 200px 50px;
+  margin: 100px 50px;
 }
 
 .pricing-section .resume {
@@ -283,10 +311,14 @@ function setChosenPlan(plan: any) {
   width: fit-content;
 }
 
+.pricing-section .card-box .plan-card {
+  height: 100%;
+}
+
 .pricing-section .card-box .plan-card .card {
-  margin: 0 auto;
+  padding: 0;
   width: 300px;
-  flex-grow: 1;
+  flex: 1 1 auto;
 }
 
 .pricing-section .card-box .plan-card p {
@@ -294,6 +326,24 @@ function setChosenPlan(plan: any) {
   font-family: Roboto;
   font-size: 17px;
   max-width: 250px;
+}
+
+.pricing-section .card-box .price-box {
+  display: flex;
+}
+
+.pricing-section .card-box .price-box .price {
+  flex: 1;
+}
+
+.pricing-section .card-box .price-box .price .charge-frequency {
+  color: #737373;
+  font-size: 14px;
+}
+
+.pricing-section .card-box .price-box button {
+  width: 100px;
+  margin-right: auto;
 }
 
 .plan-name {
@@ -323,6 +373,24 @@ function setChosenPlan(plan: any) {
 .pricing-section .btn-choose {
   width: 100%;
   border-radius: 6px;
+}
+
+.footer-section {
+  text-align: center;
+  background: #fff;
+  color: #252b42;
+  font-family: Opensans, sans-serif;
+}
+
+@media (min-width: 1921px) {
+  .inner-section-container {
+    margin: 0 auto;
+    max-width: 1800px;
+  }
+
+  img {
+    max-height: 40vh;
+  }
 }
 
 @media screen and (max-width: 800px) {
